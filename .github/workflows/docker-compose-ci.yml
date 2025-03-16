@@ -23,22 +23,11 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Pull the latest image from Docker Hub
-        run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/llm-inference-image
 
-      - name: Start Docker Compose
-        run: |
-          docker-compose up -d
-
-      - name: Run Latency Test
-        run: |
-          sh ./latency_test.sh 127.0.0.1 8080
-
-      - name: Check Logs
-        run: |
-          docker-compose logs
-
-      - name: Stop and Clean Up
-        run: |
-          docker-compose down
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./Dockerfile
+        platforms: linux/amd64,linux/arm64
+        push: true
